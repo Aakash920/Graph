@@ -1,0 +1,111 @@
+
+package graphs;
+import java.util.*;
+
+public class CycleDetection {
+	public static class Edge{
+		int src;
+		int dst;
+		public Edge(int s, int d) {
+			this.src=s;
+			this.dst=d;
+		}
+	}
+	public static void createGraph(ArrayList<Edge> graph[]) {
+		for(int i=0 ; i<graph.length ; i++) {
+				graph[i]=new ArrayList<Edge>();
+		}
+		
+//		for cycle:-
+//		graph[0].add(new Edge(0,2));
+//		graph[1].add(new Edge(1,0));
+//		graph[2].add(new Edge(2,3));
+//		graph[3].add(new Edge(3,0));
+		
+//		for Topological Sort
+		
+		graph[2].add(new Edge(2,3));
+		graph[3].add(new Edge(3,1));
+		graph[4].add(new Edge(4,0));
+		graph[4].add(new Edge(4,1));
+		graph[5].add(new Edge(5,0));
+		graph[5].add(new Edge(5,2));
+		
+		
+	}
+	public static void dfs(ArrayList<Edge> graph[], boolean vis[], int curr) {
+		System.out.print(curr+" ");
+		vis[curr]=true;
+		for(int i=0 ; i<graph[curr].size() ; i++) {
+			Edge e=graph[curr].get(i);
+			if(vis[curr]==false) {
+				dfs(graph,vis,e.dst);
+			}
+		}
+		
+	}
+	public static boolean cycle(ArrayList<Edge> graph[], boolean vis[], boolean stack[], int curr) {
+		vis[curr]=true;
+		stack[curr]=true;
+		
+		for(int i=0 ; i<graph[curr].size() ; i++) {
+			Edge e=graph[curr].get(i);
+			if(stack[e.dst]==true)
+				return true;
+			else if(!vis[e.dst]) {
+				if(cycle(graph,vis,stack,e.dst)) return true;
+			}
+		}
+		stack[curr]=false;
+		return false;
+	}
+	
+	public static void topSortUtil(ArrayList<Edge> graph[], boolean vis[], int curr, Stack<Integer> st) {
+		vis[curr]=true;
+		for(int i=0 ; i<graph[curr].size() ; i++) {
+			Edge e=graph[curr].get(i);
+			if(!vis[e.dst])
+				topSortUtil(graph,vis,e.dst,st);
+		}
+		st.push(curr);
+	}
+	public static void topSort(ArrayList<Edge> graph[], int V) {
+		//topologicalSort
+		Stack<Integer> st=new Stack<>();
+		boolean[] vis=new boolean[V];
+		for(int i=0 ; i<V ; i++) {
+			if(!vis[i]==false) {
+				topSortUtil(graph,vis,i,st);
+			}
+		}
+		while(!st.isEmpty()) {
+			System.out.print(st.pop()+" ");
+		}
+	}
+	
+	public static void main(String[] args) {
+		int V=6;
+		ArrayList<Edge> graph[]=new ArrayList[V];
+		createGraph(graph);
+//		boolean[] vis=new boolean[V];
+//		for(int i=0 ; i<V ; i++) {
+//			if(vis[i]==false)
+//				dfs(graph,vis,i);
+//		}
+//		boolean[] stackRec=new boolean[V];
+//		for(int i=0 ; i<V ; i++) {
+//			if(!vis[i]) {
+//				boolean isCycle=cycle(graph, vis, stackRec, 0);
+//				if(isCycle) {
+//					System.out.println(isCycle);
+//					break;
+//				}else {
+//					System.out.println("false");
+//					break;
+//				}
+//			}
+//		} 
+		topSort(graph,V);
+	}
+	
+}
